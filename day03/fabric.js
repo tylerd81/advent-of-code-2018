@@ -54,7 +54,6 @@ const findLonelyClaim = fabric => {
   let lonelyClaim = {};
   let found = false;
   const xValues = Object.keys(fabric);
-  console.log(typeof xValues[0]);
   let possible = 0;
 
   xValues.forEach(x => {
@@ -64,10 +63,10 @@ const findLonelyClaim = fabric => {
       if (fabric[x][y].length === 1) {
         if (fabric[x][y][0].startx === Number.parseInt(x)) {
           possible++;
-          if (checkForCollisions(fabric, fabric[x][y]) === false) {
+          if (checkForCollisions(fabric, fabric[x][y][0]) === false) {
             lonelyClaim = fabric[x][y];
-            found = true;
-            return false;
+            // found = true;
+            // console.log("found 1");
           }
         }
       }
@@ -77,11 +76,25 @@ const findLonelyClaim = fabric => {
     }
   });
 
-  // return lonelyClaim;
-  return { possible };
+  return lonelyClaim;
 };
 
-const checkForCollisions = (fabric, claim) => true;
+const checkForCollisions = (fabric, claim) => {
+  let collision = false;
+  let { width, height, startx, starty } = claim;
+
+  for (let x = 0; x < width; x++) {
+    let currX = startx + x;
+    for (let y = 0; y < height; y++) {
+      let currY = starty + y;
+      if (fabric[currX][currY].length > 1) {
+        return true; // collision
+      }
+    }
+  }
+  console.log(claim);
+  return false;
+};
 const filename = "input.txt";
 const input = fs
   .readFileSync(filename, "utf-8")
