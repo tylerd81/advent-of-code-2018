@@ -41,14 +41,28 @@ func getInput(fileName string) ([]string, int) {
   return lines,  0
 
 }
+
 func parseLine(line string) GuardData {
   var guard GuardData
 
   if strings.Contains(line, "Guard") == true {
     guard.Action = "Guard Change"
-  }else {
-    guard.Action = "Other"
+    data := strings.Split(line, " ")
+    guard.Guard = data[3]
+  }else if strings.Contains(line, "falls") {
+    guard.Action = "asleep"
+  } else if strings.Contains(line, "wakes") {
+    guard.Action = "awoke"
+  }else{
+    guard.Action = "other"
   }
+  guard.Minute = getTimeFromString(line)
 
   return guard
+}
+
+func getTimeFromString(line string) string {
+  s := strings.Split(line, " ")
+  s = strings.Split(s[1],  ":")
+  return strings.Trim(s[1], "]")
 }
