@@ -24,7 +24,8 @@ type GuardData struct {
 
 func main() {
 
-	lines, err := getInput("test_input.txt")
+	filename := "sorted.txt"
+	lines, err := getInput(filename)
 	if err != 0 {
 		fmt.Println("there was an error reading the file")
 		return
@@ -77,13 +78,71 @@ func main() {
 		// currentState = guardData.Action
 		//fmt.Println(currentGuard, currentState, guardData.Minute)
 	}
-	addUpMinutes(shiftData)
+
+	// find which guard slept the most minutes
+	biggestSleeper, mostMinutesSlept := getBiggestSleeper(shiftData)
+
+	worstGuardData := shiftData[biggestSleeper]
+
+	most, _ := getMinuteSleptMost(worstGuardData)
+	fmt.Printf("Guard %s slept the most during minute %d.\n", biggestSleeper, most)
+	// fmt.Printf("He slept %d times that minute.\n", mostMinutesSlept)
+	fmt.Printf("He slept a total of %d minutes.\n", mostMinutesSlept)
+
+	// find the guard that slept the most asleep on the same minute
+	singleMostMinute := 0
+	singleGuardID := ""
+	mostSlept := 0
+
+	for guardID, minutes := range shiftData {
+		min, amountSlept := getMinuteSleptMost(minutes)
+		if amountSlept > mostSlept {
+			mostSlept = amountSlept
+			singleMostMinute = min
+			singleGuardID = guardID
+		}
+	}
+	fmt.Printf("Guard %s was asleep during minute %d %d times.\n", singleGuardID, singleMostMinute, mostSlept)
 	// fmt.Println(shiftData)
 }
 
-func addUpMinutes(shiftData map[string][]int) {
-	// loop through the keys in the map and add up all the minutes for each guard
-	fmt.Println("Shift Data")
+func getBiggestSleeper(shiftData map[string][]int) (string, int) {
+	most := 0
+	biggestSleeper := ""
+
+	for guardID, minutes := range shiftData {
+		minutesSlept := addUpMinutes(minutes)
+		if minutesSlept > most {
+			most = minutesSlept
+			biggestSleeper = guardID
+		}
+	}
+	return biggestSleeper, most
+}
+
+func addUpMinutes(sleepData []int) int {
+	sum := 0
+
+	for _, minutes := range sleepData {
+		sum += minutes
+	}
+	return sum
+
+}
+
+func getMinuteSleptMost(minutesSlept []int) (int, int) {
+	mostMinutes := 0
+	most := 0
+	mostAmountSlept := 0
+
+	for min, amountSlept := range minutesSlept {
+		if amountSlept > mostMinutes {
+			mostMinutes = amountSlept
+			mostAmountSlept = amountSlept
+			most = min
+		}
+	}
+	return most, mostAmountSlept
 }
 func getInput(fileName string) ([]string, int) {
 	data, err := ioutil.ReadFile(fileName)
