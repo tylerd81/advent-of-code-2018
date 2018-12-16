@@ -4,7 +4,7 @@ import 'dart:io';
 void main() {
   print('Advent Of Code - Day 05');
 
-  String testInput = "dabAcCaCBAcCcaDA";
+  //String testInput = "dabAcCaCBAcCcaDA";
   // String input = testInput; // replace with data from file
 
   var file = new File('input.txt');
@@ -13,13 +13,29 @@ void main() {
   //var input = "fkKKkFJ";
   // var input = "dabAcCaCBAcCcaDA";
   // var input = "CCCAaAaAaAaAaAaAaAaAaAaAaAabB";
-  reactions(input);
+
+  String letters = "bcdefghijklmnopqrstuvwxyz";
+  int smallestReactionCount = reactions(input, "a");
+  String smallestReactionLetter = 'a';
+
+  letters.split('').forEach((letter) {
+    var len = reactions(input, letter);
+    print("Reacting $letter");
+    if (len < smallestReactionCount) {
+      smallestReactionCount = len;
+      smallestReactionLetter = letter;
+    }
+  });
+
+  print(
+      "The unit $smallestReactionLetter has the smallest reaction with $smallestReactionCount units.");
+  // reactions(input, "a");
 }
 
 // work through the reactions using a list that keeps track of the previous letter
 // each time a reaction happens remove the letter from the previous letter
 // or when there is no reaction add the letter to the list
-int reactions(String input) {
+int reactions(String input, [String ignore]) {
   // add() and removeLast()
   var previousChars = [];
   bool done = false;
@@ -29,7 +45,11 @@ int reactions(String input) {
   while (!done) {
     if (nextIndex < input.length) {
       nextChar = input[nextIndex++];
-
+      if (ignore != null) {
+        if (nextChar.toUpperCase() == ignore.toUpperCase()) {
+          continue;
+        }
+      }
       // compre previous character and the next char
       if (previousChars.length != 0 &&
           isSameChar(previousChars.last, nextChar)) {
